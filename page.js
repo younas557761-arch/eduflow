@@ -1,3 +1,3 @@
 "use client";
-import {useState} from "react";import {useRouter} from "next/navigation";import {createClient} from "@/lib/supabase";import StaffForm from "@/components/staff/StaffForm";
-export default function NewStaff(){const [busy,setBusy]=useState(false),router=useRouter();async function save(form){setBusy(true);const {error}=await createClient().from("staff").insert(form);setBusy(false);if(error)alert(error.message);else router.push("/dashboard/staff")}return <><h1 className="mb-6 text-3xl font-bold">Add staff</h1><div className="card p-6"><StaffForm onSubmit={save} busy={busy}/></div></>}
+import {useParams} from "next/navigation";
+export default function EditStaff(){const {id}=useParams();return <div className="card p-6"><h1 className="text-2xl font-bold">Edit staff</h1><p className="mt-2 text-slate-400">Staff editor for record {id}. Use the API endpoint to update fields.</p></div>}
