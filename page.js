@@ -1,23 +1,10 @@
-import Link from "next/link";
-
-export default function Home() {
-  return (
-    <main className="min-h-screen bg-slate-950">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <div className="text-2xl font-bold">EduFlow</div>
-        <div className="flex gap-3">
-          <Link href="/login" className="rounded-lg border border-slate-700 px-4 py-2">Login</Link>
-          <Link href="/signup" className="btn-primary">Start Free</Link>
-        </div>
-      </nav>
-      <section className="mx-auto max-w-5xl px-6 py-24 text-center">
-        <p className="mb-4 text-cyan-400">School management, simplified</p>
-        <h1 className="text-5xl font-bold tracking-tight md:text-7xl">Run your school with EduFlow.</h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-          Students, teachers, staff, classes and school operations in one secure platform.
-        </p>
-        <div className="mt-10"><Link href="/signup" className="btn-primary inline-block">Create your school</Link></div>
-      </section>
-    </main>
-  );
+"use client";
+import { useEffect,useState } from "react";
+import { createClient } from "@/lib/supabase";
+import StatsCard from "@/components/StatsCard";
+import Chart from "@/components/Chart";
+export default function Dashboard(){
+ const [stats,setStats]=useState({students:0,teachers:0,staff:0,classes:0});
+ useEffect(()=>{(async()=>{const s=createClient();const tables=["students","teachers","staff","classes"];const out={};for(const t of tables){const {count}=await s.from(t).select("*",{count:"exact",head:true});out[t]=count||0;}setStats(out)})()},[]);
+ return <><h1 className="text-3xl font-bold">Dashboard</h1><p className="mt-2 text-slate-400">Your school at a glance.</p><div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><StatsCard label="Students" value={stats.students}/><StatsCard label="Teachers" value={stats.teachers}/><StatsCard label="Staff" value={stats.staff}/><StatsCard label="Classes" value={stats.classes}/></div><div className="mt-6"><Chart title="School overview"/></div></>;
 }
