@@ -1,14 +1,5 @@
-import "./globals.css";
-
-export const metadata = {
-  title: "EduFlow — School Management",
-  description: "Modern school management platform"
-};
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
+export default function DashboardLayout({children}) {
+ return <div className="flex min-h-screen bg-slate-900"><Sidebar/><div className="min-w-0 flex-1"><Header/><main className="p-4 md:p-8">{children}</main></div></div>;
 }
