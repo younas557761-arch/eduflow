@@ -1,6 +1,7 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase";
-import StudentForm from "@/components/students/StudentForm";
-export default function NewStudent(){const [busy,setBusy]=useState(false),router=useRouter();async function save(form){setBusy(true);const {error}=await createClient().from("students").insert(form);setBusy(false);if(error)alert(error.message);else router.push("/dashboard/students");}return <><h1 className="mb-6 text-3xl font-bold">Add student</h1><div className="card p-6"><StudentForm onSubmit={save} busy={busy}/></div></>}
+export default async function StudentPage({params}){
+ const {data,error}=await createClient().from("students").select("*").eq("id",params.id).single();
+ if(error||!data)return <p>Student not found.</p>;
+ return <div><div className="flex justify-between"><div><h1 className="text-3xl font-bold">{data.first_name} {data.last_name}</h1><p className="text-slate-400">{data.admission_no}</p></div><Link href={`/dashboard/students/${data.id}/edit`} className="btn-primary">Edit</Link></div><div className="card mt-6 grid gap-4 p-6 md:grid-cols-2">{Object.entries(data).filter(([k])=>!["id","school_id","created_at","updated_at"].includes(k)).map(([k,v])=><div key={k}><div className="text-xs uppercase text-slate-500">{k.replaceAll("_"," ")}</div><div>{String(v??"—")}</div></div>)}</div></div>;
+}
