@@ -1,7 +1,6 @@
-import Link from "next/link";
+"use client";
+import { useEffect,useState } from "react";
+import { useParams,useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-export default async function StudentPage({params}){
- const {data,error}=await createClient().from("students").select("*").eq("id",params.id).single();
- if(error||!data)return <p>Student not found.</p>;
- return <div><div className="flex justify-between"><div><h1 className="text-3xl font-bold">{data.first_name} {data.last_name}</h1><p className="text-slate-400">{data.admission_no}</p></div><Link href={`/dashboard/students/${data.id}/edit`} className="btn-primary">Edit</Link></div><div className="card mt-6 grid gap-4 p-6 md:grid-cols-2">{Object.entries(data).filter(([k])=>!["id","school_id","created_at","updated_at"].includes(k)).map(([k,v])=><div key={k}><div className="text-xs uppercase text-slate-500">{k.replaceAll("_"," ")}</div><div>{String(v??"—")}</div></div>)}</div></div>;
-}
+import StudentForm from "@/components/students/StudentForm";
+export default function EditStudent(){const {id}=useParams(),router=useRouter();const [data,setData]=useState(null),[busy,setBusy]=useState(false);useEffect(()=>{createClient().from("students").select("*").eq("id",id).single().then(({data})=>setData(data))},[id]);if(!data)return <p>Loading...</p>;async function save(form){setBusy(true);const {error}=await createClient().from("students").update(form).eq("id",id);setBusy(false);if(error)alert(error.message);else router.push(`/dashboard/students/${id}`)}return <><h1 className="mb-6 text-3xl font-bold">Edit student</h1><div className="card p-6"><StudentForm initial={data} onSubmit={save} busy={busy}/></div></>}
